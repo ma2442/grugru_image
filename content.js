@@ -202,9 +202,17 @@ var main = async () => {
         false
     );
 
-    let { url } = await chrome.storage.local.get();
-    console.log("%o", url);
-    pic.img.src = url; // ソースのパスを設定
+    let { url, dataURL } = await chrome.storage.local.get();
+    pic.img.src = dataURL || url || "icons/icon_48.png"; // ソースのパスを設定
+    if (dataURL) {
+        output.innerHTML = "画像データ:local stroage内 dataURL";
+    } else if (url) {
+        output.innerHTML = "URL: " + pic.img.src;
+    } else {
+        output.innerHTML =
+            "保存された画像データおよびURLがありませんでした。<br />" +
+            "「ファイルの選択」から表示する画像を選択してください。";
+    }
 
     // ホイール回転イベント：拡大縮小
     document.addEventListener("wheel", (e) => {
@@ -256,6 +264,8 @@ var main = async () => {
     let toggleDisp = await tryGetElement("toggle_disp");
     let fullscreen = await tryGetElement("fullscreen");
     let reset = await tryGetElement("reset");
+    let file = await tryGetElement("file");
+    let del = await tryGetElement("delete");
 
     // ボタンクリックイベントたち
     rotateUnticlockwise90deg.onclick = () => {
@@ -296,6 +306,12 @@ var main = async () => {
         disp();
     };
 
+    // データ消去ボタン押下イベント
+    del.onclick = async function () {
+        await chrome.storage.local.clear();
+        output.innerHTML = "画像データ、URLを消去しました。";
+    };
+
     // スクリーンに合わせる
     // 縦横自動回転
     autoAdjust.onclick = () => {
@@ -322,8 +338,22 @@ var main = async () => {
         changeCanvasSize();
         canvas.requestFullscreen();
     };
+
+    // ファイルリーダーの読み込み先をキャンバス内imageに
+    const reader = new FileReader();
+    reader.onload = () => (pic.img.src = reader.result);
+
+    file.addEventListener("change", async function (e) {
+        var files = e.target.files;
+        let output = await tryGetElement("output");
+        output.innerHTML = "ファイル名：" + files[0].name;
+        reader.readAsDataURL(files[0]);
+    });
 };
 
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+// キャンバスサイズ切り替え
 let changeCanvasSize = async () => {
     let w = frame.w + (isWide ? frameMargin.w : 0);
     let h = frame.h + (isWide ? frameMargin.h : 0);

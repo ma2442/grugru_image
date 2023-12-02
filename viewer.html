@@ -37,7 +37,17 @@
                             フチ表示ON/OFF</button
                         ><br />
                         <button id="reset" class="small">リセット</button><br />
+                        <input type="file" id="file" />
                         <br />
+                    </td>
+                </tr>
+                <tr style="height: 3.5em">
+                    <td>
+                        <output id="output"></output>
+                    </td>
+                    <td>
+                        <button id="delete" class="small">データ消去</button
+                        ><br />
                     </td>
                 </tr>
             </tbody>
@@ -78,6 +88,13 @@
         }
         .big {
             height: 2em;
+        }
+        #file {
+            width: 9.93em;
+            height: 2.5em;
+            background-color: #5aa;
+            color: #5aa;
+            border: solid grey 1px;
         }
     </style>
 </html>

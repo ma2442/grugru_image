@@ -2,8 +2,8 @@
     "manifest_version": 3,
     "name": "ぐるぐるイメージ全画面版",
     "description": "画像の回転・反転・ズーム・位置調整できる全画面ビューアー",
-    "version": "0.3.0",
-    "homepage_url": "https://www.google.com/",
+    "version": "0.3.1",
+    "homepage_url": "https://github.com/ma2442/grugru_image",
 
     "action": {},
     "background": {
@@ -14,11 +14,5 @@
         "48": "icons/icon_48.png"
     },
 
-    "permissions": [
-        "activeTab",
-        "contextMenus",
-        "storage",
-        "downloads",
-        "tabs"
-    ]
+    "permissions": ["activeTab", "contextMenus", "storage", "tabs", "downloads"]
 }

@@ -1,37 +1,63 @@
 chrome.runtime.onInstalled.addListener(() => {
     chrome.contextMenus.create({
-        id: "ninja-download",
-        title: "ninja download",
-        contexts: ["image"],
-    });
-    chrome.contextMenus.create({
         id: "view-mode",
-        title: "ビュー",
+        title: "ぐるぐるイメージビュー",
         contexts: ["image"],
     });
 });
 
 var qs = {};
+var name;
 
 ////////////////////////////////////////////////////////////////////////////////
 // 右クリックメニュー　クリック時イベント
 ////////////////////////////////////////////////////////////////////////////////
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     console.log("%o", info);
-    if (info.menuItemId === "ninja-download") {
-        var href = info.srcUrl;
-        var filename = crypto.randomUUID();
-        var options = { url: href, filename: String.raw`${filename}` };
-        var id = await chrome.downloads.download(options);
-        qs[id] = true;
-
-        console.log("download: %o", qs);
-        return;
-    }
     if (info.menuItemId === "view-mode") {
         var href = info.srcUrl;
-        chrome.tabs.create({ url: "viewer.html" });
+
+        // 画像URLをlocalに保存(ビューアに渡す用)
         await chrome.storage.local.set({ url: href });
+
+        // 画像blobフェッチできたらreaderに渡してdataURLにして
+        // localに保存してビューア立ち上げて終了。
+        // CORSエラーで無理ならビューア立ち上げて終了。
+
+        var opt = {
+            method: "GET",
+            body: null,
+        };
+        let blob, response;
+        try {
+            response = await fetch(href, opt);
+        } catch (e) {
+            console.log("CORSエラー");
+            chrome.tabs.create({ url: "viewer.html" });
+            await chrome.storage.local.set({ dataURL: "" });
+            return;
+        }
+        blob = await response.blob();
+
+        // blobをdataURLに変換
+        const reader = new FileReader();
+        let dataURL;
+
+        reader.onload = async (e) => {
+            try {
+                await chrome.storage.local.set({ dataURL: e.target.result });
+            } catch (e) {
+                console.log(
+                    "データ保存に失敗した恐れがあります。(5MB超のデータ)"
+                );
+                chrome.storage.local.set({ dataURL: "" });
+            }
+            chrome.tabs.create({ url: "viewer.html" });
+        };
+
+        reader.readAsDataURL(blob);
+        console.log("画像dtaURL作成成功");
+
         return;
     }
 });
@@ -39,23 +65,3 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 chrome.action.onClicked.addListener((tab) => {
     chrome.tabs.create({ url: "viewer.html" });
 });
-
-////////////////////////////////////////////////////////////////////////////////
-// ダウンロードキューの状態変化時イベント
-// ダウンロード終了時にその履歴を消す
-////////////////////////////////////////////////////////////////////////////////
-chrome.downloads.onChanged.addListener(async (delta) => {
-    if (!qs[delta.id]) return;
-    if (!notifyComplete(delta)) return;
-    let { filename } = (await chrome.downloads.search({ id: delta.id }))[0];
-    console.log("delta %o", delta);
-    console.log("erase %o", filename);
-    await chrome.downloads.erase({ id: delta.id });
-    qs[delta.id] = undefined;
-});
-
-var notifyComplete = function (delta) {
-    if (delta.state === undefined) return false;
-    let { current, previous } = delta.state;
-    return current === "complete" && previous === "in_progress";
-};
