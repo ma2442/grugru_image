@@ -257,6 +257,7 @@ var main = async () => {
     let fullscreen = await tryGetElement("fullscreen");
     let reset = await tryGetElement("reset");
 
+    // ボタンクリックイベントたち
     rotateUnticlockwise90deg.onclick = () => {
         pic.addDeg(-90);
         disp();
@@ -283,6 +284,8 @@ var main = async () => {
         pic.setPos(baseX, baseY);
         disp();
     };
+
+    // リセットボタン押下イベント
     reset.onclick = () => {
         pic.scale.x = 1;
         pic.scale.y = 1;
@@ -310,18 +313,20 @@ var main = async () => {
     // フチ表示ON/OFF切り替え
     toggleDisp.onclick = () => {
         isWide = !isWide;
-        changeCanvasSize(
-            frame.w + (isWide ? frameMargin.w : 0),
-            frame.h + (isWide ? frameMargin.h : 0)
-        );
+        changeCanvasSize();
     };
 
+    // キャンバスをフルスクリーン表示
     fullscreen.onclick = async () => {
+        isWide = false;
+        changeCanvasSize();
         canvas.requestFullscreen();
     };
 };
 
-let changeCanvasSize = async (w, h) => {
+let changeCanvasSize = async () => {
+    let w = frame.w + (isWide ? frameMargin.w : 0);
+    let h = frame.h + (isWide ? frameMargin.h : 0);
     let prevW = canvas.width;
     let prevH = canvas.height;
     canvas.width = w;
@@ -344,41 +349,5 @@ let fitPanelToWindow = async function () {
     panelScale = Math.min(windowSizeRateW, windowSizeRateH);
     panel.style = `transform:scale(${panelScale})`;
 };
-
-let tryFull = async (triesMax) => {
-    if (triesMax == 0) return null;
-
-    let isFull = isFullScreen();
-    console.log("triesMax", triesMax, "%o", isFull);
-    if (isFull) return isFull;
-
-    // 少し待ってリトライ
-    await new Promise((ok) => setTimeout(ok, 50));
-    return tryFull(triesMax - 1);
-};
-
-/**
- * フルスクリーンかどうかを返す
- * @return {Boolean} フルスクリーンなら true、そうでないなら false
- */
-function isFullScreen() {
-    if (
-        (document.fullscreenElement !== undefined &&
-            document.fullscreenElement !== null) || // HTML5 標準
-        (document.mozFullScreenElement !== undefined &&
-            document.mozFullScreenElement !== null) || // Firefox
-        (document.webkitFullscreenElement !== undefined &&
-            document.webkitFullscreenElement !== null) || // Chrome・Safari
-        (document.webkitCurrentFullScreenElement !== undefined &&
-            document.webkitCurrentFullScreenElement !== null) || // Chrome・Safari (old)
-        (document.msFullscreenElement !== undefined &&
-            document.msFullscreenElement !== null)
-    ) {
-        // IE・Edge Legacy
-        return true; // fullscreenElement に何か入ってる = フルスクリーン中
-    } else {
-        return false; // フルスクリーンではない or フルスクリーン非対応の環境（iOS Safari など）
-    }
-}
 
 window.onload = main();
