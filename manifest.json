@@ -1,0 +1,24 @@
+{
+    "manifest_version": 3,
+    "name": "ぐるぐるイメージ全画面版",
+    "description": "画像の回転・反転・ズーム・位置調整できる全画面ビューアー",
+    "version": "0.3.0",
+    "homepage_url": "https://www.google.com/",
+
+    "action": {},
+    "background": {
+        "service_worker": "background.js"
+    },
+
+    "icons": {
+        "48": "icons/icon_48.png"
+    },
+
+    "permissions": [
+        "activeTab",
+        "contextMenus",
+        "storage",
+        "downloads",
+        "tabs"
+    ]
+}

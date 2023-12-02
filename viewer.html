@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="jp">
+    <style>
+        body {
+            overflow: hidden;
+            border: none;
+            padding: 0px;
+            margin: 0px;
+            background-color: linen;
+        }
+    </style>
+    <head>
+        <meta charset="UTF-8" />
+        <title>ぐるぐるイメージ全画面版</title>
+    </head>
+    <body>
+        <script src="content.js"></script>
+        <table id="panel">
+            <tbody>
+                <tr>
+                    <td><canvas id="canvas"> </canvas></td>
+                    <td>
+                        スクロール：拡大縮小
+                        <br />
+                        ドラッグ：移動
+                        <br />
+                        <button id="fullscreen">全画面</button><br />
+                        <button id="auto_adjust">⚡自動フィット⚡</button><br />
+                        <button id="fit_horizontal">↔フィット</button><br />
+                        <button id="fit_vertical">↕フィット</button><br />
+                        <button id="rotate_unticlockwise_90deg">◀回転</button
+                        ><br />
+                        <button id="rotate_clockwise_90deg">回転▶</button><br />
+                        <button id="mirror_horizontal">↔反転</button><br />
+                        <button id="mirror_vertical">↕反転</button><br />
+                        <button id="toggle_disp" class="small">
+                            フチ表示ON/OFF</button
+                        ><br />
+                        <button id="reset" class="small">リセット</button><br />
+                        <br />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+    <style type="text/css">
+        * {
+            /* 要素選択は不可にする。
+            要素選択→canvas内にドロップで
+            画像が勝手にマウス追従してしまうため */
+            user-select: none;
+            font-size: 30px;
+        }
+        /* table,
+        tbody, */
+        tr,
+        td {
+            border: none;
+            padding: 0px;
+            margin: 0px;
+        }
+        #panel {
+            transform-origin: top left;
+        }
+        canvas {
+            background-color: #303030;
+        }
+        button {
+            font-size: 30px;
+            width: 10em;
+            height: 2.5em;
+            padding: 0px;
+            margin: 0px;
+        }
+        .small {
+            width: 10em;
+            height: 1.5em;
+        }
+        .big {
+            height: 2em;
+        }
+    </style>
+</html>
