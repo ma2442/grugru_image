@@ -5,7 +5,9 @@
     "version": "0.3.1",
     "homepage_url": "https://github.com/ma2442/grugru_image",
 
-    "action": {},
+    "action": {
+        "default_title": "ぐるぐるイメージ全画面版"
+    },
     "background": {
         "service_worker": "background.js"
     },
@@ -14,5 +16,14 @@
         "48": "icons/icon_48.png"
     },
 
-    "permissions": ["activeTab", "contextMenus", "storage", "tabs", "downloads"]
+    "permissions": [
+        "activeTab",
+        "contextMenus",
+        "storage",
+        "tabs",
+        "downloads",
+        "scripting"
+    ],
+
+    "host_permissions": ["<all_urls>"]
 }
