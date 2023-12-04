@@ -124,6 +124,10 @@ var main = async () => {
     let frame; // フルスクリーンサイズ時の画像表示部分を示す領域
     let panel; // キャンバスと操作ボタンを含む要素
     let original; // 元ページのhtml
+    const DEFAULT_IMAGE =
+        "data:image/bmp;base64," +
+        "Qk1CAAAAAAAAAD4AAAAoAAAAAQAAAAEAAAABAAE" +
+        "AAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///wCAAAAA";
 
     ////////////////////////////////////////////////////////////////////////////
     // 関数
@@ -194,27 +198,9 @@ var main = async () => {
     ////////////////////////////////////////////////////////////////////////////
     // 実行部
     ////////////////////////////////////////////////////////////////////////////
-    let dbgSize = () => {
-        console.log(`拡大率 : ${zoom}`);
-        console.log(
-            `画面サイズ：\r\n` +
-                ` 横 ${window.screen.width}\r\n` +
-                ` 縦 ${window.screen.height}\r\n` +
-                `ウィンドウ内サイズ： \r\n` +
-                ` 横 ${window.innerWidth}\r\n` +
-                ` 縦 ${window.innerHeight}\r\n` +
-                `ウィンドウ外側サイズ： \r\n` +
-                ` 横 ${window.outerWidth}\r\n` +
-                ` 縦 ${window.outerHeight}\r\n`
-        );
-    };
-
-    dbgSize();
-
     // div要素を追加してビューアーを埋め込む
     let { url, dataURL } = await chrome.storage.local.get();
     let { viewerText } = await chrome.storage.local.get();
-    console.log("%o", viewerText);
 
     viewer = await tryGetElement("grugru_image_viewer", 2);
     if (viewer) {
@@ -235,10 +221,27 @@ var main = async () => {
     frame.h = window.screen.height;
     console.log("frame.w", frame.w);
 
+    // ソースのパスを設定
+    pic.img.src = dataURL || url || DEFAULT_IMAGE;
+    console.log("dataURL: ", dataURL);
+    console.log("url: ", url);
+
+    let output = await tryGetElement("grugru_output", 10);
+
     // 画像読み込み時イベント
     pic.img.addEventListener(
         "load",
         async function () {
+            if (dataURL) {
+                output.innerHTML = "画像データ:local stroage内 dataURL";
+            } else if (url) {
+                output.innerHTML = "URL: " + pic.img.src;
+            } else {
+                output.innerHTML =
+                    "保存された画像データおよびURLがありませんでした。<br />" +
+                    "「ファイルの選択」から表示する画像を選択してください。";
+            }
+            console.log("ok");
             canvas.width = frame.w + (isWide ? frameMargin.w : 0);
             canvas.height = frame.h + (isWide ? frameMargin.h : 0);
             fitPanelToWindow();
@@ -255,26 +258,15 @@ var main = async () => {
         },
         false
     );
-    // ソースのパスを設定
-    pic.img.src =
-        dataURL ||
-        url ||
-        "data:image/bmp;base64," +
-            "Qk1CAAAAAAAAAD4AAAAoAAAAAQAAAAEAAAABAAE" +
-            "AAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAP///wCAAAAA";
 
-    let output = await tryGetElement("grugru_output", 10);
-
-    if (dataURL) {
-        output.innerHTML = "画像データ:local stroage内 dataURL";
-    } else if (url) {
-        output.innerHTML = "URL: " + pic.img.src;
-    } else {
-        output.innerHTML =
-            "保存された画像データおよびURLがありませんでした。<br />" +
-            "「ファイルの選択」から表示する画像を選択してください。";
-    }
-    console.log("ok");
+    pic.img.addEventListener("error", async function (e) {
+        console.log("pic.img.src error");
+        console.log(e);
+        pic.img.src = DEFAULT_IMAGE;
+        chrome.storage.local.clear();
+        dataURL = "";
+        url = "";
+    });
 
     ////////////////////////////////////////////////////////////////////////////
     // イベント
