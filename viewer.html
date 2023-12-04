@@ -12,15 +12,15 @@
         width: initial;
         height: initial;
         background-color: initial;
-        font-size: 1initial;
+        font-size: initial;
         font-family: initial;
         font-stretch: initial;
         font-variant: initial;
         font-weight: initial;
         line-height: initial;
         flex-wrap: nowrap;
-        overflow-wrap: normal;
-        word-wrap: normal;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
         vertical-align: top;
         text-align: left;
         transform: initial;
@@ -132,6 +132,10 @@
     #grugru_image_viewer #grugru_exit:active {
         background-color: #aaa;
         color: black;
+    }
+
+    #grugru_image_viewer #grugru_output {
+        user-select: text;
     }
 </style>
 <script src="content.js"></script>

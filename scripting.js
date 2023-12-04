@@ -1,6 +1,9 @@
 "use strict";
 
 var main = async () => {
+    let mod = (a, n) => ((a % n) + n) % n; // 非負の剰余を返す
+    let niceDeg = (deg) => mod(deg, 360); // 0 ~ <360 の角度に直す
+
     ////////////////////////////////////////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
     /**
@@ -13,9 +16,10 @@ var main = async () => {
             this.x = 0;
             this.y = 0;
             this.deg = 0; // 角度
-            // 拡大率 x,yは絶対値　signX, signYは
-            // それぞれx座標、y座標反転時に-1となる
-            this.scale = { x: 1, y: 1, signX: 1, signY: 1 };
+            // 拡大率 x,yは絶対値　signXは
+            this.scale = { x: 1, y: 1 };
+            // x座標反転時に-1となる
+            this.signX = 1;
             this.w = 0;
             this.h = 0;
             return this;
@@ -33,6 +37,27 @@ var main = async () => {
             return this;
         }
 
+        isPortrait() {
+            return this.w < this.h;
+        }
+
+        isLandscape() {
+            return this.w > this.h;
+        }
+
+        isMirror() {
+            return this.signX == -1;
+        }
+
+        mirrorX() {
+            this.signX *= -1;
+        }
+
+        mirrorY() {
+            this.signX *= -1;
+            this.addDeg(180);
+        }
+
         calcRealW() {
             return this.w * this.scale.x;
         }
@@ -42,7 +67,7 @@ var main = async () => {
         }
 
         addDeg(deg) {
-            this.deg += this.scale.signX * this.scale.signY * deg;
+            this.deg = niceDeg(this.deg + this.signX * deg);
             return this;
         }
 
@@ -50,40 +75,31 @@ var main = async () => {
             return Math.min(this.w * this.scale.x, this.h * this.scale.y);
         }
 
+        // 回転を考慮した現在の横向きの長さを引数に合わせる
         fitRealW(w) {
-            if (this.deg % 180 == 0) {
-                // 通常
-                this.scale.x = w / pic.w;
-                this.scale.y = this.scale.x;
-            } else {
-                // 縦横が入れ替わっている
-                this.scale.y = w / pic.h;
-                this.scale.x = this.scale.y;
-            }
+            let len = this.w;
+            if (this.deg % 180 == 90) len = this.h;
+            if (this.deg == 270 && this.signX == -1) console.log(len);
+            this.scale.x = w / len;
+            this.scale.y = w / len;
             return this;
         }
 
+        // 回転を考慮した現在の縦向きの長さを引数に合わせる
         fitRealH(h) {
-            if (this.deg % 180 == 0) {
-                // 通常
-                this.scale.y = h / pic.h;
-                this.scale.x = this.scale.y;
-            } else {
-                // 縦横が入れ替わっている
-                this.scale.x = h / pic.w;
-                this.scale.y = this.scale.x;
-            }
+            let len = this.h;
+            if (this.deg % 180 == 90) len = this.w;
+            if (this.deg == 270 && this.signX == -1) console.log(len);
+            this.scale.x = h / len;
+            this.scale.y = h / len;
             return this;
         }
 
         draw(ctx) {
-            this.deg %= 360;
+            this.deg = niceDeg(this.deg);
             ctx.save();
             ctx.translate(this.x, this.y);
-            ctx.scale(
-                this.scale.x * this.scale.signX,
-                this.scale.y * this.scale.signY
-            );
+            ctx.scale(this.scale.x * this.signX, this.scale.y);
             ctx.rotate(this.deg * DEG_TO_RAD);
             ctx.drawImage(this.img, -this.w / 2, -this.h / 2);
             ctx.restore();
@@ -232,14 +248,13 @@ var main = async () => {
     pic.img.addEventListener(
         "load",
         async function () {
-            if (dataURL) {
-                output.innerHTML = "画像データ:local stroage内 dataURL";
-            } else if (url) {
-                output.innerHTML = "URL: " + pic.img.src;
+            if (url) {
+                output.innerHTML = `${url}`;
+                if (dataURL)
+                    output.innerHTML +=
+                        "<br />(ブラウザのローカルストレージに保存済み)";
             } else {
-                output.innerHTML =
-                    "保存された画像データおよびURLがありませんでした。<br />" +
-                    "「ファイルの選択」から表示する画像を選択してください。";
+                output.innerHTML = "画像データがありません。<br />";
             }
             console.log("ok");
             canvas.width = frame.w + (isWide ? frameMargin.w : 0);
@@ -332,7 +347,7 @@ var main = async () => {
 
     // ボタンクリックイベントたち
     rotateUnticlockwise90deg.onclick = () => {
-        pic.addDeg(-90);
+        pic.addDeg(270);
         disp();
     };
     rotateClockwise90deg.onclick = () => {
@@ -340,11 +355,11 @@ var main = async () => {
         disp();
     };
     mirrorVertical.onclick = () => {
-        pic.scale.signY *= -1;
+        pic.mirrorY();
         disp();
     };
     mirrorHorizontal.onclick = () => {
-        pic.scale.signX *= -1;
+        pic.mirrorX();
         disp();
     };
     fitVertical.onclick = () => {
@@ -362,8 +377,7 @@ var main = async () => {
     reset.onclick = () => {
         pic.scale.x = 1;
         pic.scale.y = 1;
-        pic.scale.signX = 1;
-        pic.scale.signY = 1;
+        pic.signX = 1;
         pic.deg = 0;
         pic.setPos(baseX, baseY);
         disp();
@@ -378,9 +392,16 @@ var main = async () => {
     // スクリーンに合わせる
     // 縦横自動回転
     autoAdjust.onclick = () => {
-        if (pic.h > pic.w && frame.h < frame.w) {
-            if (pic.deg == 90) pic.deg = -90;
-            else pic.deg = 90;
+        // 画像は縦長、画面は横長 であれば画像を横向きに
+        // 右向きか左向きかわからないのでクリックごとに入れ替える
+        if (pic.isPortrait() && frame.isLandscape()) {
+            pic.addDeg(90);
+            if (pic.deg % 180 == 0) {
+                pic.addDeg(90);
+            }
+        } else {
+            // 縦長同士なら
+            pic.deg = 0;
         }
         let scale1 = pic.fitRealH(frame.h).scale.x;
         let scale2 = pic.fitRealW(frame.w).scale.x;
@@ -410,12 +431,18 @@ var main = async () => {
 
     // ファイルリーダーの読み込み先をキャンバス内imageに
     const reader = new FileReader();
-    reader.onload = () => (pic.img.src = reader.result);
+    reader.onload = async () => {
+        pic.img.src = reader.result;
+        dataURL = reader.result;
+        await chrome.storage.local.set({ dataURL: dataURL });
+    };
 
     file.addEventListener("change", async function (e) {
-        var files = e.target.files;
-        output.innerHTML = "ファイル名：" + files[0].name;
+        let files = e.target.files;
+        console.log("file name: ", files[0].name);
         reader.readAsDataURL(files[0]);
+        url = files[0].name;
+        await chrome.storage.local.set({ url: url });
     });
 };
 

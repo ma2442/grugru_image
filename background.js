@@ -26,7 +26,6 @@ let backgroundjs = async function () {
                 files: ["scripting.js"],
             });
         }
-
         return;
     };
 
