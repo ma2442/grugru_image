@@ -25,6 +25,8 @@ let backgroundjs = async function () {
                 target: { tabId: tabs[0].id },
                 files: ["scripting.js"],
             });
+        } else {
+            chrome.tabs.create({ url: "viewer_new.html" });
         }
         return;
     };

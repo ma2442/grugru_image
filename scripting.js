@@ -239,8 +239,8 @@ var main = async () => {
 
     // ソースのパスを設定
     pic.img.src = dataURL || url || DEFAULT_IMAGE;
-    console.log("dataURL: ", dataURL);
-    console.log("url: ", url);
+    // console.log("dataURL: ", dataURL);
+    // console.log("url: ", url);
 
     let output = await tryGetElement("grugru_output", 10);
 
@@ -249,12 +249,11 @@ var main = async () => {
         "load",
         async function () {
             if (url) {
-                output.innerHTML = `${url}`;
+                output.value = `${url}\r\n`;
                 if (dataURL)
-                    output.innerHTML +=
-                        "<br />(ブラウザのローカルストレージに保存済み)";
+                    output.value += "(ブラウザのローカルストレージに保存済み)";
             } else {
-                output.innerHTML = "画像データがありません。<br />";
+                output.value = "画像データがありません。";
             }
             console.log("ok");
             canvas.width = frame.w + (isWide ? frameMargin.w : 0);
@@ -386,7 +385,7 @@ var main = async () => {
     // データ消去ボタン押下イベント
     del.onclick = async function () {
         await chrome.storage.local.clear();
-        output.innerHTML = "画像データ、URLを消去しました。";
+        output.value = "画像データ、URLを消去しました。";
     };
 
     // スクリーンに合わせる
@@ -426,6 +425,12 @@ var main = async () => {
     // ビューアー終了
     exit.onclick = async () => {
         console.log("exit");
+        // 新規ページで立ち上がっていた場合はタブを閉じる
+        if (document.title == "ぐるぐるイメージ全画面版") {
+            window.close();
+            return;
+        }
+        // 重ねて表示の場合はビューワーのDOMだけ消す。
         viewer.remove();
     };
 
