@@ -14,8 +14,8 @@ let backgroundjs = async function () {
         });
     });
 
+    // ビューアー画面を現ページに重ねて開くか新規タブで開くかする
     let openViewer = async function () {
-        // 画像URLをlocalに保存(ビューアに渡す用)
         let text = await (await fetch("viewer.html")).text();
         await chrome.storage.local.set({ viewerText: text });
 
@@ -36,6 +36,8 @@ let backgroundjs = async function () {
         return;
     };
 
+    // 画像データを取得してdataURLとして保存する
+    // できなければ 画像URLのみ保存する
     let makeImgData = async function (href) {
         await chrome.storage.local.set({ url: href });
         await chrome.storage.local.set({ dataURL: "" });
@@ -91,9 +93,8 @@ let backgroundjs = async function () {
         return;
     };
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // 右クリックメニュー　クリック時イベント
-    ////////////////////////////////////////////////////////////////////////////////
+    // 画像の上で右クリックするとコンテキストメニューに"ぐるぐるイメージ"を表示
+    // クリックするとビューア起動して画像を表示する
     chrome.contextMenus.onClicked.addListener(async (info, tab) => {
         dlog("%o", info);
         if (info.menuItemId === "view-mode") {
@@ -103,6 +104,7 @@ let backgroundjs = async function () {
         }
     });
 
+    // 拡張のアイコンクリックしたらビューアを開く
     chrome.action.onClicked.addListener(async (tab) => {
         await openViewer();
     });
