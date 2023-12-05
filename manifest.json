@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "ぐるぐるイメージ全画面版",
     "description": "画像の回転・反転・ズーム・位置調整できる全画面ビューアー",
-    "version": "0.3.2",
+    "version": "0.3.3",
     "homepage_url": "https://github.com/ma2442/grugru_image",
 
     "action": {
@@ -22,7 +22,6 @@
         "contextMenus",
         "storage",
         "tabs",
-        "downloads",
         "scripting"
     ],
 

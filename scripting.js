@@ -1,6 +1,11 @@
 "use strict";
 
 var main = async () => {
+    let debug = false;
+    let dlog = function (...args) {
+        if (debug) console.log(...args);
+    };
+
     let mod = (a, n) => ((a % n) + n) % n; // 非負の剰余を返す
     let niceDeg = (deg) => mod(deg, 360); // 0 ~ <360 の角度に直す
 
@@ -79,7 +84,6 @@ var main = async () => {
         fitRealW(w) {
             let len = this.w;
             if (this.deg % 180 == 90) len = this.h;
-            if (this.deg == 270 && this.signX == -1) console.log(len);
             this.scale.x = w / len;
             this.scale.y = w / len;
             return this;
@@ -89,7 +93,6 @@ var main = async () => {
         fitRealH(h) {
             let len = this.h;
             if (this.deg % 180 == 90) len = this.w;
-            if (this.deg == 270 && this.signX == -1) console.log(len);
             this.scale.x = h / len;
             this.scale.y = h / len;
             return this;
@@ -152,7 +155,7 @@ var main = async () => {
         if (triesMax == 0) return null;
 
         let elem = document.getElementById(id);
-        console.log("id", id, "triesMax", triesMax, "%o", elem);
+        dlog("id", id, "triesMax", triesMax, "%o", elem);
         if (elem) return elem;
 
         // 少し待ってリトライ
@@ -235,12 +238,12 @@ var main = async () => {
     frame = new Rectable();
     frame.w = window.screen.width;
     frame.h = window.screen.height;
-    console.log("frame.w", frame.w);
+    dlog("frame.w", frame.w);
 
     // ソースのパスを設定
     pic.img.src = dataURL || url || DEFAULT_IMAGE;
-    // console.log("dataURL: ", dataURL);
-    // console.log("url: ", url);
+    dlog("dataURL: ", dataURL);
+    dlog("url: ", url);
 
     let output = await tryGetElement("grugru_output", 10);
 
@@ -255,7 +258,6 @@ var main = async () => {
             } else {
                 output.value = "画像データがありません。";
             }
-            console.log("ok");
             canvas.width = frame.w + (isWide ? frameMargin.w : 0);
             canvas.height = frame.h + (isWide ? frameMargin.h : 0);
             fitPanelToWindow();
@@ -266,8 +268,8 @@ var main = async () => {
                 pic.img.naturalWidth,
                 pic.img.naturalHeight
             );
-            console.log("pic.x y", pic.x, pic.y);
-            console.log("pic.w h", pic.w, pic.h);
+            dlog("pic.x y", pic.x, pic.y);
+            dlog("pic.w h", pic.w, pic.h);
             disp();
         },
         false

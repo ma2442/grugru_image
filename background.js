@@ -1,6 +1,11 @@
 "use strict";
 
 let backgroundjs = async function () {
+    let debug = false;
+    let dlog = function (...args) {
+        if (debug) console.log(...args);
+    };
+
     chrome.runtime.onInstalled.addListener(() => {
         chrome.contextMenus.create({
             id: "view-mode",
@@ -19,7 +24,7 @@ let backgroundjs = async function () {
             lastFocusedWindow: true,
         });
 
-        console.log("tabs[0] : %o", tabs[0]);
+        dlog("tabs[0] : %o", tabs[0]);
         if (tabs[0].url.startsWith("http") || tabs[0].url.startsWith("file")) {
             chrome.scripting.executeScript({
                 target: { tabId: tabs[0].id },
@@ -45,7 +50,7 @@ let backgroundjs = async function () {
         };
         let blob, res;
         try {
-            console.log("fetch ", href);
+            dlog("fetch ", href);
             res = await fetch(href, opt);
         } catch (e) {
             console.log("CORSエラー");
@@ -60,27 +65,29 @@ let backgroundjs = async function () {
 
         // blobをdataURLに変換
         const reader = new FileReader();
-
         reader.readAsDataURL(blob);
-        await new Promise((resolve) =>
-            reader.addEventListener("load", async (event) => {
-                try {
-                    await chrome.storage.local.set({
-                        dataURL: event.target.result,
-                    });
-                } catch (err) {
-                    console.log(
-                        "データ保存に失敗した恐れがあります。(5MB超のデータ)"
-                    );
-                    await chrome.storage.local.set({ dataURL: "" });
-                    return resolve();
-                }
 
-                console.log("画像dataURL作成成功");
-                return resolve();
-            })
-        );
+        let AddEventListenerPromise = (target, type) => {
+            return new Promise((resolve) => {
+                let listener = (event) => {
+                    dlog({ event });
+                    resolve(event);
+                };
+                target.addEventListener(type, listener);
+            });
+        };
 
+        let event = await AddEventListenerPromise(reader, "load");
+
+        try {
+            await chrome.storage.local.set({ dataURL: event.target.result });
+        } catch (err) {
+            console.log("データ保存に失敗した恐れがあります。(5MB超のデータ)");
+            await chrome.storage.local.set({ dataURL: "" });
+            return;
+        }
+
+        console.log("画像dataURL作成成功");
         return;
     };
 
@@ -88,7 +95,7 @@ let backgroundjs = async function () {
     // 右クリックメニュー　クリック時イベント
     ////////////////////////////////////////////////////////////////////////////////
     chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-        console.log("%o", info);
+        dlog("%o", info);
         if (info.menuItemId === "view-mode") {
             await makeImgData(info.srcUrl);
             await openViewer();
