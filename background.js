@@ -62,24 +62,23 @@ let backgroundjs = async function () {
         const reader = new FileReader();
 
         reader.readAsDataURL(blob);
-        await new Promise(
-            (resolve) =>
-                (reader.onload = async (e) => {
-                    try {
-                        await chrome.storage.local.set({
-                            dataURL: e.target.result,
-                        });
-                    } catch (e) {
-                        console.log(
-                            "データ保存に失敗した恐れがあります。(5MB超のデータ)"
-                        );
-                        await chrome.storage.local.set({ dataURL: "" });
-                        return resolve();
-                    }
-
-                    console.log("画像dataURL作成成功");
+        await new Promise((resolve) =>
+            reader.addEventListener("load", async (event) => {
+                try {
+                    await chrome.storage.local.set({
+                        dataURL: event.target.result,
+                    });
+                } catch (err) {
+                    console.log(
+                        "データ保存に失敗した恐れがあります。(5MB超のデータ)"
+                    );
+                    await chrome.storage.local.set({ dataURL: "" });
                     return resolve();
-                })
+                }
+
+                console.log("画像dataURL作成成功");
+                return resolve();
+            })
         );
 
         return;
