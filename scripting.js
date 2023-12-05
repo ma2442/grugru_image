@@ -251,8 +251,8 @@ var main = async () => {
     pic.img.addEventListener(
         "load",
         async function () {
-            if (url) {
-                output.value = `${url}\r\n`;
+            if (url || dataURL) {
+                output.value = `${url || "dataURL"}\r\n`;
                 if (dataURL)
                     output.value += "(ブラウザのローカルストレージに保存済み)";
             } else {

@@ -39,8 +39,13 @@ let backgroundjs = async function () {
     // 画像データを取得してdataURLとして保存する
     // できなければ 画像URLのみ保存する
     let makeImgData = async function (href) {
-        await chrome.storage.local.set({ url: href });
-        await chrome.storage.local.set({ dataURL: "" });
+        //urlがそもそもdataURLなら保存して終了
+        if (href.startsWith("data:")) {
+            await chrome.storage.local.set({ url: "", dataURL: href });
+            return;
+        }
+
+        await chrome.storage.local.set({ url: href, dataURL: "" });
 
         // 画像blobフェッチできたらreaderに渡してdataURLにして
         // localに保存してビューア立ち上げて終了。
