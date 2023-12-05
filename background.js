@@ -44,57 +44,7 @@ let backgroundjs = async function () {
             await chrome.storage.local.set({ url: "", dataURL: href });
             return;
         }
-
         await chrome.storage.local.set({ url: href, dataURL: "" });
-
-        // 画像blobフェッチできたらreaderに渡してdataURLにして
-        // localに保存してビューア立ち上げて終了。
-        // CORSエラーで無理ならビューア立ち上げて終了。
-
-        var opt = {
-            method: "GET",
-            body: null,
-        };
-        let blob, res;
-        try {
-            dlog("fetch ", href);
-            res = await fetch(href, opt);
-        } catch (e) {
-            console.log("CORSエラー");
-            return;
-        }
-
-        console.log("response status code : ", res.status);
-        // レスポンスがOK以外だったら終了
-        if (res.status !== 200) return;
-
-        blob = await res.blob();
-
-        // blobをdataURLに変換
-        const reader = new FileReader();
-        reader.readAsDataURL(blob);
-
-        let AddEventListenerPromise = (target, type) => {
-            return new Promise((resolve) => {
-                let listener = (event) => {
-                    dlog({ event });
-                    resolve(event);
-                };
-                target.addEventListener(type, listener);
-            });
-        };
-
-        let event = await AddEventListenerPromise(reader, "load");
-
-        try {
-            await chrome.storage.local.set({ dataURL: event.target.result });
-        } catch (err) {
-            console.log("データ保存に失敗した恐れがあります。(5MB超のデータ)");
-            await chrome.storage.local.set({ dataURL: "" });
-            return;
-        }
-
-        console.log("画像dataURL作成成功");
         return;
     };
 
