@@ -9,6 +9,7 @@ json で保存できそう、json ファイルは chrome.downloads で履歴を�
 [x] 画像削除機能
 [ ] タグごとにスライドショーする機能追加
 [ ] 5MB 超のデータを chrome.local.storage.set しようとした場合の挙動確認
+[x] 英語対応
 
 # fix
 

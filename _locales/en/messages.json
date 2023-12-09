@@ -1,0 +1,62 @@
+{
+    "name": {
+        "message": "GRUGRU Image Fullscreen Version"
+    },
+    "description": {
+        "message": "Full-screen viewer that allows you to rotate, flip, zoom, and position images"
+    },
+    "contextMenusTitle": {
+        "message": "GRUGRU Image view"
+    },
+    "operateDescription": {
+        "message": "Scroll: Zoom<br />Drag: Move"
+    },
+    "fullscreen": {
+        "message": "Full-screen"
+    },
+    "autoAdjust": {
+        "message": "⚡Auto Fit⚡"
+    },
+    "fitHorizontal": {
+        "message": "↔Fit"
+    },
+    "fitVertical": {
+        "message": "↕Fit"
+    },
+    "rotateUnticlockwise90deg": {
+        "message": "◀Rotate"
+    },
+    "rotateClockwise90deg": {
+        "message": "Rotate▶"
+    },
+    "mirrorHorizontal": {
+        "message": "↔Invert"
+    },
+    "mirrorVertical": {
+        "message": "↕Invert"
+    },
+    "toggleDisp": {
+        "message": "Display Margin ON/OFF"
+    },
+    "reset": {
+        "message": "Reset"
+    },
+    "exit": {
+        "message": "Close Veiwer"
+    },
+    "fileArea": {
+        "message": "Choose File"
+    },
+    "delete": {
+        "message": "Delete Data"
+    },
+    "outputMsgErrNotFound": {
+        "message": "No image data"
+    },
+    "outputMsgOmit": {
+        "message": " ..(Omitted)"
+    },
+    "outputMsgDelete": {
+        "message": "Image data and URL have been deleted."
+    }
+}

@@ -151,6 +151,18 @@ var main = async () => {
     ////////////////////////////////////////////////////////////////////////////
     // 関数
     ////////////////////////////////////////////////////////////////////////////
+    let tryGetTag = async (tagName, triesMax) => {
+        if (triesMax == 0) return null;
+
+        let elem = document.getElementsByTagName(tagName)[0];
+        dlog("tagName", tagName, "triesMax", triesMax, "%o", elem);
+        if (elem) return elem;
+
+        // 少し待ってリトライ
+        await new Promise((ok) => setTimeout(ok, 50));
+        return tryGetElement(tagName, triesMax - 1);
+    };
+
     let tryGetElement = async (id, triesMax) => {
         if (triesMax == 0) return null;
 
@@ -254,9 +266,11 @@ var main = async () => {
             if (url) {
                 output.value = `${url}\r\n`;
             } else if (dataURL) {
-                output.value = dataURL.slice(0, 200) + " ..(省略)";
+                output.value =
+                    dataURL.slice(0, 200) +
+                    chrome.i18n.getMessage("outputMsgOmit");
             } else {
-                output.value = "画像データがありません。";
+                output.value = chrome.i18n.getMessage("outputMsgErrNotFound");
             }
             canvas.width = frame.w + (isWide ? frameMargin.w : 0);
             canvas.height = frame.h + (isWide ? frameMargin.h : 0);
@@ -326,6 +340,16 @@ var main = async () => {
         };
     };
 
+    // 新規タブで開いた場合タイトルに拡張名を表示
+    let pageTitle = await tryGetTag("title", 10);
+    if (pageTitle.innerHTML === "Viewer") {
+        pageTitle.innerHTML = chrome.i18n.getMessage("name");
+    }
+
+    let operateDescription = await tryGetElement(
+        "grugru_operate_description",
+        10
+    );
     let rotateUnticlockwise90deg = await tryGetElement(
         "grugru_rotate_unticlockwise_90deg",
         10
@@ -343,8 +367,31 @@ var main = async () => {
     let fullscreen = await tryGetElement("grugru_fullscreen", 10);
     let reset = await tryGetElement("grugru_reset", 10);
     let file = await tryGetElement("grugru_file", 10);
+    let fileArea = await tryGetElement("grugru_file_area_label", 10);
     let del = await tryGetElement("grugru_delete", 10);
     let exit = await tryGetElement("grugru_exit", 10);
+
+    // ラベル挿入
+    operateDescription.innerHTML = chrome.i18n.getMessage("operateDescription");
+    rotateUnticlockwise90deg.innerHTML = chrome.i18n.getMessage(
+        "rotateUnticlockwise90deg"
+    );
+    rotateClockwise90deg.innerHTML = chrome.i18n.getMessage(
+        "rotateClockwise90deg"
+    );
+    mirrorVertical.innerHTML = chrome.i18n.getMessage("mirrorVertical");
+    mirrorHorizontal.innerHTML = chrome.i18n.getMessage("mirrorHorizontal");
+    fitVertical.innerHTML = chrome.i18n.getMessage("fitVertical");
+    fitHorizontal.innerHTML = chrome.i18n.getMessage("fitHorizontal");
+    autoAdjust.innerHTML = chrome.i18n.getMessage("autoAdjust");
+    toggleDisp.innerHTML = chrome.i18n.getMessage("toggleDisp");
+    fullscreen.innerHTML = chrome.i18n.getMessage("fullscreen");
+    reset.innerHTML = chrome.i18n.getMessage("reset");
+    file.innerHTML = chrome.i18n.getMessage("file");
+
+    fileArea.innerHTML = chrome.i18n.getMessage("fileArea");
+    del.innerHTML = chrome.i18n.getMessage("delete");
+    exit.innerHTML = chrome.i18n.getMessage("exit");
 
     // ボタンクリックイベントたち
     rotateUnticlockwise90deg.onclick = () => {
@@ -387,7 +434,7 @@ var main = async () => {
     // データ消去ボタン押下イベント
     del.onclick = async function () {
         await chrome.storage.local.clear();
-        output.value = "画像データ、URLを消去しました。";
+        output.value = chrome.i18n.getMessage("outputMsgDelete");
     };
 
     // スクリーンに合わせる
@@ -428,7 +475,7 @@ var main = async () => {
     exit.onclick = async () => {
         console.log("exit");
         // 新規ページで立ち上がっていた場合はタブを閉じる
-        if (document.title == "ぐるぐるイメージ全画面版") {
+        if (document.title == chrome.i18n.getMessage("name")) {
             window.close();
             return;
         }

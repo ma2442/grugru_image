@@ -1,0 +1,62 @@
+{
+    "name": {
+        "message": "ぐるぐるイメージ全画面版"
+    },
+    "description": {
+        "message": "画像の回転・反転・ズーム・位置調整できる全画面ビューアー"
+    },
+    "contextMenusTitle": {
+        "message": "ぐるぐるイメージビュー"
+    },
+    "operateDescription": {
+        "message": "スクロール：拡大縮小<br />ドラッグ：移動"
+    },
+    "fullscreen": {
+        "message": "全画面"
+    },
+    "autoAdjust": {
+        "message": "⚡自動フィット⚡"
+    },
+    "fitHorizontal": {
+        "message": "↔フィット"
+    },
+    "fitVertical": {
+        "message": "↕フィット"
+    },
+    "rotateUnticlockwise90deg": {
+        "message": "◀回転"
+    },
+    "rotateClockwise90deg": {
+        "message": "回転▶"
+    },
+    "mirrorHorizontal": {
+        "message": "↔反転"
+    },
+    "mirrorVertical": {
+        "message": "↕反転"
+    },
+    "toggleDisp": {
+        "message": "フチ表示ON/OFF"
+    },
+    "reset": {
+        "message": "リセット"
+    },
+    "exit": {
+        "message": "ビューアーを閉じる"
+    },
+    "fileArea": {
+        "message": "ファイル選択"
+    },
+    "delete": {
+        "message": "データ消去"
+    },
+    "outputMsgErrNotFound": {
+        "message": "画像データがありません。"
+    },
+    "outputMsgOmit": {
+        "message": " ..(省略)"
+    },
+    "outputMsgDelete": {
+        "message": "画像データ、URLを消去しました。"
+    }
+}

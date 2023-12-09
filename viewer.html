@@ -149,10 +149,11 @@
                 <textarea id="grugru_output" wrap="off"> </textarea>
             </td>
             <td>
-                スクロール：拡大縮小
-                <br />
-                ドラッグ：移動
-                <br />
+                <div id="grugru_operate_description">
+                    スクロール：拡大縮小
+                    <br />
+                    ドラッグ：移動
+                </div>
                 <button id="grugru_fullscreen">全画面</button><br />
                 <button id="grugru_auto_adjust">⚡自動フィット⚡</button><br />
                 <button id="grugru_fit_horizontal">↔フィット</button><br />
@@ -162,13 +163,17 @@
                 <button id="grugru_rotate_clockwise_90deg">回転▶</button><br />
                 <button id="grugru_mirror_horizontal">↔反転</button><br />
                 <button id="grugru_mirror_vertical">↕反転</button><br />
-                <button id="grugru_toggle_disp" class="small">
+                <button
+                    id="grugru_toggle_disp"
+                    class="small"
+                    style="font-size: 0.9em"
+                >
                     フチ表示ON/OFF</button
                 ><br />
                 <button id="grugru_reset" class="small">リセット</button><br />
                 <button id="grugru_exit">ビューアーを閉じる</button><br />
                 <div id="grugru_file_area">
-                    ファイル選択
+                    <span id="grugru_file_area_label">ファイル選択</span>
                     <input type="file" id="grugru_file" />
                 </div>
                 <button id="grugru_delete" class="small">データ消去</button

@@ -9,7 +9,7 @@ let backgroundjs = async function () {
     chrome.runtime.onInstalled.addListener(() => {
         chrome.contextMenus.create({
             id: "view-mode",
-            title: "ぐるぐるイメージビュー",
+            title: chrome.i18n.getMessage("contextMenusTitle"),
             contexts: ["image"],
         });
     });
