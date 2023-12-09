@@ -19,13 +19,18 @@ let backgroundjs = async function () {
         let text = await (await fetch("viewer.html")).text();
         await chrome.storage.local.set({ viewerText: text });
 
-        var tabs = await chrome.tabs.query({
+        let tabs = await chrome.tabs.query({
             active: true,
             lastFocusedWindow: true,
         });
 
         dlog("tabs[0] : %o", tabs[0]);
-        if (tabs[0].url.startsWith("http") || tabs[0].url.startsWith("file")) {
+
+        let url = new URL(tabs[0].url);
+        if (
+            ["http:", "https:", "file:"].includes(url.protocol) &&
+            !/chromewebstore.google.com/.test(url.host)
+        ) {
             chrome.scripting.executeScript({
                 target: { tabId: tabs[0].id },
                 files: ["scripting.js"],
