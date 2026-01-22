@@ -85,13 +85,13 @@
     /* ファイルドロップ領域のデザイン*/
     #grugru_image_viewer #grugru_file_area {
         width: auto;
-        height: 3.1em;
+        height: 1.5em;
         padding: 0px;
         margin: 3px 0px 0px 0px;
         background-color: #5aa;
         position: relative;
         color: #000;
-        border: dashed grey 0.2em;
+        border: dashed #444 0.1em;
         /* 上下中央ぞろえ */
         display: grid;
         place-items: center;
@@ -167,17 +167,18 @@
                     id="grugru_toggle_disp"
                     class="small"
                     style="font-size: 0.9em"
+                    hidden
                 >
                     フチ表示ON/OFF</button
-                ><br />
+                >
                 <button id="grugru_reset" class="small">リセット</button><br />
-                <button id="grugru_exit">ビューアーを閉じる</button><br />
                 <div id="grugru_file_area">
-                    <span id="grugru_file_area_label">ファイル選択</span>
+                    <span id="grugru_file_area_label" style="font-size: 0.9em">ファイル選択</span>
                     <input type="file" id="grugru_file" />
                 </div>
-                <button id="grugru_delete" class="small">データ消去</button
-                ><br />
+                <button id="grugru_delete" class="small" hidden>データ消去</button
+                >
+                <button id="grugru_exit">閉じる</button><br />
             </td>
         </tr>
     </tbody>

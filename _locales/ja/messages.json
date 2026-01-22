@@ -42,7 +42,7 @@
         "message": "リセット"
     },
     "exit": {
-        "message": "ビューアーを閉じる"
+        "message": "閉じる"
     },
     "fileArea": {
         "message": "ファイル選択"
