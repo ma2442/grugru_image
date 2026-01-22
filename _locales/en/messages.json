@@ -1,12 +1,12 @@
 {
     "name": {
-        "message": "GRUGRU Image Fullscreen Version"
+        "message": "Spin & Flip - Fullscreen Image Viewer"
     },
     "description": {
-        "message": "Full-screen viewer that allows you to rotate, flip, zoom, and position images"
+        "message": "A full-screen image viewer with rotate, flip, zoom, and drag controls"
     },
     "contextMenusTitle": {
-        "message": "GRUGRU Image view"
+        "message": "Spin & Flip"
     },
     "operateDescription": {
         "message": "Scroll: Zoom<br />Drag: Move"
