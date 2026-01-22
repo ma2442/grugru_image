@@ -232,6 +232,7 @@ var main = async () => {
     // div要素を追加してビューアーを埋め込む
     let { url, dataURL } = await chrome.storage.local.get();
     let { viewerText } = await chrome.storage.local.get();
+    chrome.storage.local.clear();
 
     viewer = await tryGetElement("grugru_image_viewer", 2);
     if (viewer) {
