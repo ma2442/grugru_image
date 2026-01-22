@@ -17,6 +17,9 @@
     "autoAdjust": {
         "message": "⚡自動フィット⚡"
     },
+    "showEntireImage": {
+        "message": "画像全体を表示"
+    },
     "fitHorizontal": {
         "message": "↔フィット"
     },

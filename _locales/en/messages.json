@@ -6,7 +6,7 @@
         "message": "A full-screen image viewer with rotate, flip, zoom, and drag controls"
     },
     "contextMenusTitle": {
-        "message": "Spin & Flip"
+        "message": "Spin and Flip"
     },
     "operateDescription": {
         "message": "Scroll: Zoom<br />Drag: Move"
@@ -16,6 +16,9 @@
     },
     "autoAdjust": {
         "message": "⚡Auto Fit⚡"
+    },
+    "showEntireImage": {
+        "message": "Show Entire Image"
     },
     "fitHorizontal": {
         "message": "↔Fit"

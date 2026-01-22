@@ -285,6 +285,8 @@ var main = async () => {
             );
             dlog("pic.x y", pic.x, pic.y);
             dlog("pic.w h", pic.w, pic.h);
+            // 画像がはみ出さない範囲でできるだけ拡大して表示
+            fitToShortEdge();
             disp();
         },
         false
@@ -305,15 +307,19 @@ var main = async () => {
 
     // ホイール回転イベント：拡大縮小
     document.addEventListener("wheel", (e) => {
-        let sign = e.deltaY <= 0 ? 1 : -1;
+        let isScaleUp = e.deltaY <= 0;
+        let tmpScaleFactor = 1.25;
 
         // 小さすぎるので縮小しない。
-        if (pic.calcRealShort() < 10 && sign < 0) return;
+        if (pic.calcRealShort() < 10 && !isScaleUp) return;
 
-        let delta = (sign * pic.scale.x) / 25;
-
-        pic.scale.x += delta;
-        pic.scale.y += delta;
+        if (isScaleUp) {
+            pic.scale.x *= tmpScaleFactor;
+            pic.scale.y *= tmpScaleFactor;
+        } else {
+            pic.scale.x /= tmpScaleFactor;
+            pic.scale.y /= tmpScaleFactor;
+        }
         disp();
     });
 
@@ -364,6 +370,7 @@ var main = async () => {
     let fitVertical = await tryGetElement("grugru_fit_vertical", 10);
     let fitHorizontal = await tryGetElement("grugru_fit_horizontal", 10);
     let autoAdjust = await tryGetElement("grugru_auto_adjust", 10);
+    let showEntireImage = await tryGetElement("grugru_show_entire_image", 10);
     let toggleDisp = await tryGetElement("grugru_toggle_disp", 10);
     let fullscreen = await tryGetElement("grugru_fullscreen", 10);
     let reset = await tryGetElement("grugru_reset", 10);
@@ -385,6 +392,7 @@ var main = async () => {
     fitVertical.innerHTML = chrome.i18n.getMessage("fitVertical");
     fitHorizontal.innerHTML = chrome.i18n.getMessage("fitHorizontal");
     autoAdjust.innerHTML = chrome.i18n.getMessage("autoAdjust");
+    showEntireImage.innerHTML = chrome.i18n.getMessage("showEntireImage");
     toggleDisp.innerHTML = chrome.i18n.getMessage("toggleDisp");
     fullscreen.innerHTML = chrome.i18n.getMessage("fullscreen");
     reset.innerHTML = chrome.i18n.getMessage("reset");
@@ -424,11 +432,10 @@ var main = async () => {
 
     // リセットボタン押下イベント
     reset.onclick = () => {
-        pic.scale.x = 1;
-        pic.scale.y = 1;
         pic.signX = 1;
         pic.deg = 0;
         pic.setPos(baseX, baseY);
+        fitToShortEdge();
         disp();
     };
 
@@ -437,6 +444,16 @@ var main = async () => {
         await chrome.storage.local.clear();
         output.value = chrome.i18n.getMessage("outputMsgDelete");
     };
+
+    // 画像全体を表示(短辺フィット)
+    let fitToShortEdge = () => {
+        let scale1 = pic.fitRealH(frame.h).scale.x;
+        let scale2 = pic.fitRealW(frame.w).scale.x;
+        pic.scale.x = pic.scale.y = Math.min(scale1, scale2);
+        pic.setPos(baseX, baseY);
+        disp();
+    };
+    showEntireImage.onclick = fitToShortEdge;
 
     // スクリーンに合わせる
     // 縦横自動回転
@@ -452,11 +469,7 @@ var main = async () => {
             // 縦長同士なら
             pic.deg = 0;
         }
-        let scale1 = pic.fitRealH(frame.h).scale.x;
-        let scale2 = pic.fitRealW(frame.w).scale.x;
-        pic.scale.x = pic.scale.y = Math.min(scale1, scale2);
-        pic.setPos(baseX, baseY);
-        disp();
+        fitToShortEdge();
     };
 
     // フチ表示ON/OFF切り替え
@@ -489,7 +502,6 @@ var main = async () => {
     reader.onload = async () => {
         pic.img.src = reader.result;
         dataURL = reader.result;
-        await chrome.storage.local.set({ dataURL: dataURL });
     };
 
     file.addEventListener("change", async function (e) {
@@ -497,7 +509,6 @@ var main = async () => {
         console.log("file name: ", files[0].name);
         reader.readAsDataURL(files[0]);
         url = files[0].name;
-        await chrome.storage.local.set({ url: url });
     });
 };
 
