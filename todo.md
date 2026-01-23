@@ -21,6 +21,7 @@
 
 -   [ ] 全画面から戻るとフチ表示が必ず OFF になっている
 -   [ ] 全画面でマウスドラッグの位置がずれる(倍率の問題？)
+-   [ ] https://cloud.google.com/vision?hl=jaにあるGoogle Cloud の SVG ロゴを開くと倍率が大きすぎる(<img src ="https://www.gstatic.com/cgc/google-cloud-logo.svg"...のタグ)
 
 ## In Progress
 
